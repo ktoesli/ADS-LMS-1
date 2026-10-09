@@ -24,9 +24,32 @@ public class FiboC {
     long fasterC(long n, int m) {
         //Интуитивно найти решение не всегда просто и
         //возможно потребуется дополнительный поиск информации
-        return -1L;
-    }
+        long period = pisano(m);
+        long r = n % period;
 
+        long a = 0, b = 1;               // F(0), F(1)
+        for (long i = 0; i < r; i++) {
+            long c = (a + b) % m;
+            a = b;
+            b = c;
+        }
+        return a;                        // F(r) mod m
+
+
+
+
+    }
+    private long pisano(int m) {
+        long a = 0, b = 1;
+        for (long i = 0; ; i++) {
+            long c = (a + b) % m;
+            a = b;
+            b = c;
+            if (a == 0 && b == 1) {      // вернулись к началу
+                return i + 1;
+            }
+        }
+    }
 
 }
 

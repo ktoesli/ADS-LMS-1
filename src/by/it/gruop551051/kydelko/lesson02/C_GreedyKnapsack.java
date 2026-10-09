@@ -15,6 +15,7 @@ package by.it.gruop551051.kydelko.lesson02;
 
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class C_GreedyKnapsack {
@@ -49,11 +50,24 @@ public class C_GreedyKnapsack {
         //кроме того, можете описать свой компаратор в классе Item
 
         //ваше решение.
+        Arrays.sort(items);                       // самые выгодные в начале
+        int free = W;                             // сколько места осталось
+        for (Item item : items) {
+            if (free == 0) break;
+            if (item.weight <= free) {            // влезает ли целиком
+                result += item.cost;
+                free -= item.weight;
+            } else {                              // отрезаем
+                result += (double) item.cost * free / item.weight;
+                free = 0;
+            }
+        }
 
 
         System.out.printf("Удалось собрать рюкзак на сумму %f\n", result);
         return result;
     }
+
 
     private static class Item implements Comparable<Item> {
         int cost;
@@ -74,10 +88,8 @@ public class C_GreedyKnapsack {
 
         @Override
         public int compareTo(Item o) {
-            //тут может быть ваш компаратор
-
-
-            return 0;
+            // по убыванию цены за единицу веса
+            return Long.compare((long) o.cost * this.weight, (long) this.cost * o.weight);
         }
     }
 }

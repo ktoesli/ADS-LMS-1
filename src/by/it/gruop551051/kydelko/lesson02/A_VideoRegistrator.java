@@ -1,6 +1,7 @@
 package by.it.gruop551051.kydelko.lesson02;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 /*
 Даны события events
@@ -23,9 +24,23 @@ public class A_VideoRegistrator {
     List<Double> calcStartTimes(double[] events, double workDuration) {
         //events - события которые нужно зарегистрировать
         //timeWorkDuration время работы видеокамеры после старта
-        List<Double> result;
-        result = new ArrayList<>();
-        int i = 0;                              //i - это индекс события events[i]
+
+        //Решение
+        List<Double> result = new ArrayList<>();
+        double[] sorted = events.clone();       // копия для отката
+        Arrays.sort(sorted);
+
+        int i = 0;
+        while (i < sorted.length) {
+            double start = sorted[i];           // включаем камеру на самом раннем событии
+            result.add(start);
+            double end = start + workDuration;
+            while (i < sorted.length && sorted[i] <= end) {
+                i++;                            // пропускаем всё, что покрыто
+            }
+        }
+        return result;
+    }//i - это индекс события events[i]
         //Комментарии от проверочного решения сохранены для подсказки, но вы можете их удалить.
         //Подготовка к жадному поглощению массива событий
         //hint: сортировка Arrays.sort обеспечит скорость алгоритма
@@ -39,6 +54,8 @@ public class A_VideoRegistrator {
         //за время до конца работы, увеличивая индекс
 
 
-        return result;                        //вернем итог
-    }
+
+
+               //вернем итог
+
 }
