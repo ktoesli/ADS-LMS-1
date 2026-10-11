@@ -57,8 +57,58 @@ public class C_GetInversions {
         int result = 0;
         //!!!!!!!!!!!!!!!!!!!!!!!!     тут ваше решение   !!!!!!!!!!!!!!!!!!!!!!!!
 
+        result = mergeSort(a, 0, n - 1);
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
+    }
+    // сортировка слиянием, которая еще и считает инверсии
+    int mergeSort(int[] a, int left, int right) {
+        if (left >= right) {
+            return 0;
+        }
+        int mid = (left + right) / 2;
+        int count = 0;
+        count += mergeSort(a, left, mid);
+        count += mergeSort(a, mid + 1, right);
+        count += merge(a, left, mid, right);
+        return count;
+    }
+
+    // сливаем две части и считаем инверсии между ними
+    int merge(int[] a, int left, int mid, int right) {
+        int[] temp = new int[right - left + 1];
+        int i = left;
+        int j = mid + 1;
+        int k = 0;
+        int count = 0;
+
+        while (i <= mid && j <= right) {
+            if (a[i] <= a[j]) {
+                temp[k] = a[i];
+                i++;
+            } else {
+                temp[k] = a[j];
+                j++;
+                // a[j] меньше a[i], а значит и меньше всех оставшихся в левой части
+                // (они все больше или равны a[i]), каждая такая пара - инверсия
+                count += mid - i + 1;
+            }
+            k++;
+        }
+        while (i <= mid) {
+            temp[k] = a[i];
+            i++;
+            k++;
+        }
+        while (j <= right) {
+            temp[k] = a[j];
+            j++;
+            k++;
+        }
+        for (int t = 0; t < temp.length; t++) {
+            a[left + t] = temp[t];
+        }
+        return count;
     }
 }

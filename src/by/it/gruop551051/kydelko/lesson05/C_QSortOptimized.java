@@ -63,11 +63,96 @@ public class C_QSortOptimized {
         }
         //тут реализуйте логику задачи с применением быстрой сортировки
         //в классе отрезка Segment реализуйте нужный для этой задачи компаратор
+        //отрезки сортируем на месте по началу
+        quickSort(segments, 0, n - 1);
 
+        //для концов делаем такие же "отрезки" (stop, stop), чтобы
+        //отсортировать их той же самой сортировкой
+        Segment[] stops = new Segment[n];
+        for (int i = 0; i < n; i++) {
+            stops[i] = new Segment(segments[i].stop, segments[i].stop);
+        }
+        quickSort(stops, 0, n - 1);
+
+        //для каждой точки бинарным поиском находим сколько отрезков началось
+        //и сколько закончилось до неё, разница - это ответ
+        for (int i = 0; i < m; i++) {
+            int p = points[i];
+            int started = countLessOrEqual(segments, p);
+            int finished = countLess(stops, p);
+            result[i] = started - finished;
+        }
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
     }
+
+    //быстрая сортировка с 3-разбиением и без хвостовой рекурсии
+    private void quickSort(Segment[] a, int left, int right) {
+        while (left < right) {
+            Segment pivot = a[(left + right) / 2];
+            int lt = left;   //граница меньших
+            int gt = right;  //граница больших
+            int i = left;
+            while (i <= gt) {
+                int cmp = a[i].compareTo(pivot);
+                if (cmp < 0) {
+                    swap(a, lt, i);
+                    lt++;
+                    i++;
+                } else if (cmp > 0) {
+                    swap(a, i, gt);
+                    gt--;
+                } else {
+                    i++;
+                }
+            }
+            //теперь [left..lt-1] меньше опорного, [lt..gt] равны ему,
+            //[gt+1..right] больше. Равные трогать уже не надо.
+            //в рекурсию идём в меньшую часть, а большую делаем циклом
+            if (lt - left < right - gt) {
+                quickSort(a, left, lt - 1);
+                left = gt + 1;
+            } else {
+                quickSort(a, gt + 1, right);
+                right = lt - 1;}
+        }
+    }
+
+    private void swap(Segment[] a, int i, int j) {
+        Segment tmp = a[i];
+        a[i] = a[j];
+        a[j] = tmp;
+    }
+
+    //сколько отрезков имеют start <= p (массив отсортирован по start)
+    private int countLessOrEqual(Segment[] a, int p) {
+        int low = 0;
+        int high = a.length;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (a[mid].start <= p) {
+                low = mid + 1;
+            } else {
+                high = mid;}
+        }
+        return low;
+    }
+
+    //сколько отрезков имеют start < p (массив отсортирован по start)
+    private int countLess(Segment[] a, int p) {
+        int low = 0;
+        int high = a.length;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (a[mid].start < p) {
+                low = mid + 1;
+            } else {
+                high = mid;}
+        }
+        return low;
+    }
+
 
     //отрезок
     private class Segment implements Comparable {
@@ -77,11 +162,22 @@ public class C_QSortOptimized {
         Segment(int start, int stop) {
             this.start = start;
             this.stop = stop;
+            //на случай если концы пришли в обратном порядке
+            if (start > stop) {
+                this.start = stop;
+                this.stop = start;}
         }
 
         @Override
         public int compareTo(Object o) {
             //подумайте, что должен возвращать компаратор отрезков
+            Segment other = (Segment) o;
+            if (this.start < other.start) {
+                return -1;
+            }
+            if (this.start > other.start) {
+                return 1;
+            }
             return 0;
         }
     }

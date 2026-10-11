@@ -69,9 +69,85 @@ public class A_QSort {
         //тут реализуйте логику задачи с применением быстрой сортировки
         //в классе отрезка Segment реализуйте нужный для этой задачи компаратор
 
+        int[] starts = new int[n];
+        int[] stops = new int[n];
+        for (int i = 0; i < n; i++) {
+            starts[i] = segments[i].start;
+            stops[i] = segments[i].stop;
+        }
 
+        //сортируем оба массива
+        quickSort(starts, 0, n - 1);
+        quickSort(stops, 0, n - 1);
+
+        //для каждой точки: (сколько отрезков уже началось) - (сколько уже закончилось)
+        for (int i = 0; i < m; i++) {
+            int p = points[i];
+            int started = countLessOrEqual(starts, p);
+            int finished = countLess(stops, p);
+            result[i] = started - finished;
+        }
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
+    }
+
+
+
+    //обычная быстрая сортировка
+    private void quickSort(int[] a, int left, int right) {
+        if (left >= right) {
+            return;
+        }
+        int pivot = a[(left + right) / 2];
+        int i = left;
+        int j = right;
+        while (i <= j) {
+            while (a[i] < pivot) {
+                i++;
+            }
+            while (a[j] > pivot) {
+                j--;
+            }
+            if (i <= j) {
+                int tmp = a[i];
+                a[i] = a[j];
+                a[j] = tmp;
+                i++;
+                j--;
+            }
+        }
+        quickSort(a, left, j);
+        quickSort(a, i, right);
+    }
+
+    //сколько элементов отсортированного массива <= p (бинарный поиск)
+    private int countLessOrEqual(int[] a, int p) {
+        int low = 0;
+        int high = a.length;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (a[mid] <= p) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
+    }
+
+    //сколько элементов отсортированного массива < p (бинарный поиск)
+    private int countLess(int[] a, int p) {
+        int low = 0;
+        int high = a.length;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (a[mid] < p) {
+                low = mid + 1;
+            } else {
+                high = mid;
+            }
+        }
+        return low;
     }
 
     //отрезок
@@ -84,12 +160,21 @@ public class A_QSort {
             this.stop = stop;
             //тут вообще-то лучше доделать конструктор на случай если
             //концы отрезков придут в обратном порядке
+            if (start > stop) {
+                this.start = stop;
+                this.stop = start;
+            }
         }
 
         @Override
         public int compareTo(Segment o) {
             //подумайте, что должен возвращать компаратор отрезков
-
+            if (this.start < o.start) {
+                return -1;
+            }
+            if (this.start > o.start) {
+                return 1;
+            }
             return 0;
         }
     }

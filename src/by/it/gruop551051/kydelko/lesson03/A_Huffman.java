@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.*;
 
 //Lesson 3. A_Huffman.
-//Разработайте метод encode(File file) для кодирования строки (код Хаффмана)
+    //Разработайте метод encode(File file) для кодирования строки (код Хаффмана)
 
 // По данным файла (непустой строке ss длины не более 104104),
 // состоящей из строчных букв латинского алфавита,
@@ -64,24 +64,39 @@ public class A_Huffman {
 
         //все комментарии от тестового решения были оставлены т.к. это задание A.
         //если они вам мешают их можно удалить
-
+        codes.clear();
         Map<Character, Integer> count = new HashMap<>();
         //1. переберем все символы по очереди и рассчитаем их частоту в Map count
         //для каждого символа добавим 1 если его в карте еще нет или инкремент если есть.
-
+        for (char c : s.toCharArray()) {
+            count.merge(c, 1, Integer::sum);
+        }
         //2. перенесем все символы в приоритетную очередь в виде листьев
         PriorityQueue<Node> priorityQueue = new PriorityQueue<>();
+        for (Map.Entry<Character, Integer> e : count.entrySet()) {
+            priorityQueue.add(new LeafNode(e.getValue(), e.getKey()));
+        }
 
         //3. вынимая по два узла из очереди (для сборки родителя)
         //и возвращая этого родителя обратно в очередь
         //построим дерево кодирования Хаффмана.
         //У родителя частоты детей складываются.
-
+        while (priorityQueue.size() > 1) {
+            Node left = priorityQueue.poll();
+            Node right = priorityQueue.poll();
+            priorityQueue.add(new InternalNode(left, right));
+        }
         //4. последний из родителей будет корнем этого дерева
         //это будет последний и единственный элемент оставшийся в очереди priorityQueue.
-        StringBuilder sb = new StringBuilder();
-        //.....
+        Node root = priorityQueue.poll();
+        //если в строке одна буква, корень - сам лист, ему нужен код "0"
+        root.fillCodes(root instanceof LeafNode ? "0" : "");
 
+        StringBuilder sb = new StringBuilder();
+
+        for (char c : s.toCharArray()) {
+            sb.append(codes.get(c));
+        }
         return sb.toString();
         //01001100100111
         //01001100100111

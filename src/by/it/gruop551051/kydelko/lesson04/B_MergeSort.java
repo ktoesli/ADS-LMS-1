@@ -48,10 +48,58 @@ public class B_MergeSort {
         // тут ваше решение (реализуйте сортировку слиянием)
         // https://ru.wikipedia.org/wiki/Сортировка_слиянием
 
+        mergeSort(a, 0, n - 1);
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return a;
     }
+    // делим массив пополам, сортируем каждую половину и сливаем
+    void mergeSort(int[] a, int left, int right) {
+        if (left >= right) {
+            return; // один элемент уже отсортирован
+        }
+        int mid = (left + right) / 2;
+        mergeSort(a, left, mid);
+        mergeSort(a, mid + 1, right);
+        merge(a, left, mid, right);
+    }
+
+    // слияние двух отсортированных частей a[left..mid] и a[mid+1..right]
+    void merge(int[] a, int left, int mid, int right) {
+        int[] temp = new int[right - left + 1];
+        int i = left;
+        int j = mid + 1;
+        int k = 0;
+
+        while (i <= mid && j <= right) {
+            if (a[i] <= a[j]) {
+                temp[k] = a[i];
+                i++;
+            } else {
+                temp[k] = a[j];
+                j++;
+            }
+            k++;
+        }
+        // докидываем то, что осталось в левой части
+        while (i <= mid) {
+            temp[k] = a[i];
+            i++;
+            k++;
+        }
+        // докидываем то, что осталось в правой части
+        while (j <= right) {
+            temp[k] = a[j];
+            j++;
+            k++;
+        }
+        // копируем обратно в основной массив
+        for (int t = 0; t < temp.length; t++) {
+            a[left + t] = temp[t];
+        }
+    }
 
 
 }
+
+
