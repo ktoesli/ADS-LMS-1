@@ -56,7 +56,49 @@ public class C_LongNotUpSubSeq {
             m[i] = scanner.nextInt();
         }
         //тут реализуйте логику задачи методами динамического программирования (!!!)
+
+        int[] tail = new int[n];
+        // prev[i] - индекс предыдущего элемента в цепочке для элемента i (нужен для восстановления)
+        int[] prev = new int[n];
         int result = 0;
+
+        for (int i = 0; i < n; i++) {
+            // бинарным поиском ищем первую позицию, где значение в tail строго меньше m[i]
+            int left = 0;
+            int right = result;
+            while (left < right) {
+                int mid = (left + right) / 2;
+                if (m[tail[mid]] >= m[i]) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+            // left - позиция, куда ставим текущий элемент
+            if (left > 0) {
+                prev[i] = tail[left - 1];
+            } else {
+                prev[i] = -1;
+            }
+            tail[left] = i;
+            // если дошли до конца, то цепочка стала длиннее
+            if (left == result) {
+                result++;
+            }
+        }
+
+        // восстанавливаем индексы с конца
+        int[] indexes = new int[result];
+        int cur = tail[result - 1];
+        for (int k = result - 1; k >= 0; k--) {
+            indexes[k] = cur + 1; // индексы по условию с единицы
+            cur = prev[cur];
+        }
+        // выводим индексы второй строкой (длину выведет main)
+        for (int k = 0; k < result; k++) {
+            System.out.print(indexes[k] + " ");
+        }
+        System.out.println();
 
 
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
