@@ -47,6 +47,19 @@ public class A_Knapsack {
 
 
         int result = 0;
+        boolean[] can = new boolean[w + 1];
+        can[0] = true;
+        for (int j = 1; j <= w; j++) {
+            for (int i = 0; i < n; i++) {
+                if (gold[i] > 0 && gold[i] <= j && can[j - gold[i]]) {
+                    can[j] = true;
+                    break;
+                }
+            }
+            if (can[j]) {
+                result = j;
+            }
+        }
         //!!!!!!!!!!!!!!!!!!!!!!!!!     КОНЕЦ ЗАДАЧИ     !!!!!!!!!!!!!!!!!!!!!!!!!
         return result;
     }
